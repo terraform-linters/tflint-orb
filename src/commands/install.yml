@@ -1,0 +1,13 @@
+description: >
+  Installs TFLint in Linux
+parameters:
+  version:
+    type: string
+    default: latest
+    description: The version of TFLint to install. Specify "latest" for the most recent version.
+steps:
+  - run:
+      environment:
+        TFLINT_VERSION: << parameters.version >>
+      name: Install TFLint
+      command: << include(scripts/install.sh) >>

@@ -1,0 +1,11 @@
+version: 2.1
+
+description: >
+  Install and run TFLint, a linter for Terraform configuration.
+
+display:
+  home_url: "https://github.com/terraform-linters/tflint"
+  source_url: "https://github.com/terraform-linters/tflint-orb"
+
+orbs:
+  terraform: circleci/terraform@2.0.2

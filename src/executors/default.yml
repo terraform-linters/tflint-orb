@@ -1,0 +1,10 @@
+description: >
+  A minimal TFLint Docker executor
+docker:
+  - image: 'wata727/tflint:<<parameters.tag>>'
+parameters:
+  tag:
+    default: latest
+    description: >
+      The Docker tag for the tflint image
+    type: string

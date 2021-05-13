@@ -1,0 +1,52 @@
+description: >
+  Runs TFLint in a Docker container
+
+executor:
+  name: default
+  tag: << parameters.version >>
+
+parameters:
+  checkout:
+    type: boolean
+    default: true
+    description: Enables checkout before all other steps
+  version:
+    type: string
+    default: latest
+    description: The version of TFLint to use. Specify "latest" for the most recent version.
+  modules:
+    type: boolean
+    default: false
+    description: Enables linting of child modules. If enabled, Terraform will be installed and terraform init will be run before TFLint.
+  terraform-version:
+    type: string
+    default: '0.14.11'
+    description: The version of Terraform to install if init is enabled.
+  config:
+    type: string
+    default: ''
+    description: Path to a TFLint configuration file. If unset, TFLint will load from its default locations.
+  path:
+    type: string
+    default: '.'
+    description: The path to the Terraform module to check with TFLint
+  flags:
+    type: string
+    default: ''
+    description: Additional command line flags to pass to TFLint
+steps:
+  - when:
+      condition: << parameters.checkout >>
+      steps:
+        - checkout
+  - when:
+      condition: << parameters.modules >>
+      steps:
+        - terraform/install:
+            terraform_version: << parameters.terraform-version >>
+        - terraform/init:
+            path: << parameters.path >>
+  - lint:
+      path: << parameters.path >>
+      config: << parameters.config >>
+      flags: '<<# parameters.modules >>--module<</ parameters.modules >> << parameters.flags >>'

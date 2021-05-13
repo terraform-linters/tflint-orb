@@ -1,0 +1,43 @@
+description: >
+  Runs TFLint
+parameters:
+  format:
+    type: string
+    default: junit
+    description: The output format to generate. Must be "junit" if "store-test-results" is enabled.
+  store-test-results:
+    type: boolean
+    default: true
+    description: Whether to persist JUnit output to CircleCI for display in the job UI.
+  config:
+    type: string
+    default: ''
+    description: Path to a TFLint configuration file. If unset, TFLint will load from its default locations.
+  path:
+    type: string
+    default: '.'
+    description: The path to the Terraform module to check with TFLint. Multiple space-separated module paths can be provided.
+  flags:
+    type: string
+    default: ''
+    description: Additional command line flags to pass to TFLint
+
+steps:
+  - run:
+      name: Run TFLint
+      command: |-
+        if [ "true" = "<< parameters.store-test-results" ] && [ "junit" != "<< parameters.format >>" ]; do
+          echo "format must be set to junit to store test results"
+        fi
+
+        tflint \
+          --format << parameters.format >> \
+          <<# parameters.config >>--config << parameters.config >><</ parameters.config >> \
+          << parameters.flags >> \
+          << parameters.path >> \
+          | tee tflint.out
+  - when:
+      condition: << parameters.store-test-results >>
+      steps:
+        - store_test_results:
+            path: tflint.out
